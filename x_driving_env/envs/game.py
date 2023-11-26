@@ -200,10 +200,13 @@ class Game:
                 )  # Update the current speed sign image
 
     def generate_speed_bumps(self):
-        distances = range(0, END_POINT_DISTANCE + 1, 5000)
+        distances = range(0, END_POINT_DISTANCE + 1, 1000)
         for d in distances:
             lane = random.choice(["left", "right"])
-            position = (ROAD_LEFT, -d)
+            if lane == "left":
+                position = (ROAD_LEFT + 10, -d)
+            else:
+                position = (ROAD_RIGHT - 90, -d)
             self.speed_bumps.append(SpeedBump(position))
 
     def update_speed_bumps(self):

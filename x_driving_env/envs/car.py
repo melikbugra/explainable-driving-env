@@ -107,7 +107,7 @@ class Car:
 
     def handle_keyboard_input(self):
         keys = pygame.key.get_pressed()
-        move_speed = 2  # Speed of lateral movement (should be int)
+        move_speed = 3  # Speed of lateral movement (should be int)
         self.turn_angle = 0  # Reset tire angle
         if keys[pygame.K_LEFT]:
             self.rect.x -= move_speed
