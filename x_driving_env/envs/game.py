@@ -7,6 +7,7 @@ from x_driving_env.envs.constants import *
 from x_driving_env.envs.car import Car
 from x_driving_env.envs.road import Road
 from x_driving_env.envs.speed_sign import SpeedSign
+from x_driving_env.envs.speed_bump import SpeedBump
 
 
 class Game:
@@ -29,9 +30,11 @@ class Game:
         self.game_over = False
         self.score = 0
         self.speed_signs = []
+        self.speed_bumps = []
         self.current_speed_limit = 25
         self.current_speed_sign_image = None
         self.generate_speed_signs()
+        self.generate_speed_bumps()
 
     def reset(self):
         self.initial_state()
@@ -69,7 +72,6 @@ class Game:
             self.setup_rendering()
             self.draw_grass()
             self.road.draw(self.screen)
-            self.car.draw(self.screen)
 
             # Display velocity, acceleration, and score
             self.render_text(f"Velocity: {self.car.velocity:.2f}", (10, 10))
@@ -87,6 +89,11 @@ class Game:
 
             for sign in self.speed_signs:
                 sign.draw(self.screen, render=True)
+
+            for bump in self.speed_bumps:
+                bump.draw(self.screen, render=True)
+
+            self.car.draw(self.screen)
 
     def draw_grass(self):
         # Draw grass on the left side of the road
@@ -109,6 +116,7 @@ class Game:
         self.road.update(self.car.velocity)
         self.distance_travelled += self.car.velocity
         self.update_speed_signs()
+        self.update_speed_bumps()
 
         # Update score only if below speed limit
         if self.car.velocity <= self.current_speed_limit + 1:
@@ -190,6 +198,18 @@ class Game:
                 self.current_speed_sign_image = (
                     sign.image
                 )  # Update the current speed sign image
+
+    def generate_speed_bumps(self):
+        distances = range(0, END_POINT_DISTANCE + 1, 5000)
+        for d in distances:
+            lane = random.choice(["left", "right"])
+            position = (ROAD_LEFT, -d)
+            self.speed_bumps.append(SpeedBump(position))
+
+    def update_speed_bumps(self):
+        for bump in self.speed_bumps:
+            bump.position = (bump.position[0], bump.position[1] + self.car.velocity)
+            bump.rect.y = bump.position[1]
 
 
 if __name__ == "__main__":

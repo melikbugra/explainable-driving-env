@@ -1,1 +1,1 @@
-from x_driving_env.envs.x_driving_env import XDrivingEnv
+from x_driving_env.envs.env import XDrivingEnv
