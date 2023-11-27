@@ -1,5 +1,5 @@
 import pygame
-from x_driving_env.envs.constants import *
+from constants import *
 
 
 class SpeedBump:
@@ -9,6 +9,7 @@ class SpeedBump:
         self.size = (num_rectangles * (20), 20)
         self.image = None
         self.rect = pygame.Rect(position[0], position[1], self.size[0], self.size[1])
+        self.collided = False
 
     def create_image(self):
         # Create the image only when needed

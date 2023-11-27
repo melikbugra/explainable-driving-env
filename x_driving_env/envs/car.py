@@ -1,5 +1,5 @@
 import pygame
-from x_driving_env.envs.constants import *
+from constants import *
 
 
 class Car:

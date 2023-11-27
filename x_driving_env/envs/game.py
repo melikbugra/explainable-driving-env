@@ -2,12 +2,12 @@ import pygame
 import sys
 import random
 
-from x_driving_env.envs.constants import *
+from constants import *
 
-from x_driving_env.envs.car import Car
-from x_driving_env.envs.road import Road
-from x_driving_env.envs.speed_sign import SpeedSign
-from x_driving_env.envs.speed_bump import SpeedBump
+from car import Car
+from road import Road
+from speed_sign import SpeedSign
+from speed_bump import SpeedBump
 
 
 class Game:
@@ -213,6 +213,13 @@ class Game:
         for bump in self.speed_bumps:
             bump.position = (bump.position[0], bump.position[1] + self.car.velocity)
             bump.rect.y = bump.position[1]
+
+            # Check if the car is near the sign
+            if (
+                self.car.rect.colliderect(bump.rect) and not bump.collided
+            ):  # Threshold for proximity
+                self.car.velocity *= 2 / 3
+                bump.collided = True
 
 
 if __name__ == "__main__":
