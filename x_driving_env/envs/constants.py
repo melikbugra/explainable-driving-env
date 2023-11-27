@@ -1,8 +1,8 @@
 # Constants
-MAX_GAME_TIME = 1000  # 30 seconds in milliseconds
+MAX_GAME_TIME = 5000
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-END_POINT_DISTANCE = 10000  # Distance to reach for the game to end
+END_POINT_DISTANCE = 100000  # Distance to reach for the game to end
 ASPHALT_COLOR = (70, 70, 70)  # Dark grey color for the road
 GRASS_COLOR = (0, 100, 0)  # Darker shades of green
 GRASS_SIZE = 50  # Size of each grass square
@@ -31,6 +31,6 @@ ROAD_FRICTION = 0.03  # Existing friction value, used for the road
 KERB_FRICTION = 0.08  # Higher friction for kerbs
 GRASS_FRICTION = 0.09  # Even higher friction for grass
 
-ROAD_MAX_VELOCITY = 15
-KERB_MAX_VELOCITY = 10
-GRASS_MAX_VELOCITY = 3
+ROAD_MAX_VELOCITY = 10
+KERB_MAX_VELOCITY = 7
+GRASS_MAX_VELOCITY = 4

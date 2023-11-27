@@ -1,7 +1,7 @@
 from stable_baselines3 import PPO
 from x_driving_env.envs import XDrivingEnv
 
-model = PPO.load("ppo_driving")
+model = PPO.load("models/ppo_model_880000_steps")
 
 env = XDrivingEnv()
 

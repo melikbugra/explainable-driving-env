@@ -32,12 +32,16 @@ class Game:
         self.speed_signs = []
         self.speed_bumps = []
         self.current_speed_limit = 25
+        self.next_bump_x_position = -1000
+        self.next_bump_y_position = -1000
         self.current_speed_sign_image = None
         self.generate_speed_signs()
         self.generate_speed_bumps()
 
     def reset(self):
         self.initial_state()
+
+        return self.get_state_representation()
 
     def render_text(self, text, position, color=(255, 255, 255)):
         font = pygame.font.SysFont(None, 36)
@@ -74,8 +78,8 @@ class Game:
             self.road.draw(self.screen)
 
             # Display velocity, acceleration, and score
-            self.render_text(f"Velocity: {self.car.velocity:.2f}", (10, 10))
-            self.render_text(f"Acceleration: {self.car.acceleration:.3f}", (10, 50))
+            self.render_text(f"Velocity: {self.car.velocity*10:.2f}", (10, 10))
+            self.render_text(f"Acceleration: {self.car.acceleration*10:.3f}", (10, 50))
             self.render_text(
                 f"Score: {float(self.score):.3f}", (10, 90)
             )  # Display score
@@ -121,10 +125,10 @@ class Game:
         # Update score only if below speed limit
         if self.car.velocity <= self.current_speed_limit + 1:
             self.score = (
-                self.car.velocity + self.car.acceleration * 10 - PENALTY_CONSTANT
+                self.car.velocity + self.car.acceleration * 0 - PENALTY_CONSTANT
             )
         else:
-            self.score = -self.car.acceleration * 10 - PENALTY_CONSTANT
+            self.score = -self.car.acceleration * 1 - PENALTY_CONSTANT
 
         if self.car.on_kerbs():
             self.score -= 3 * PENALTY_CONSTANT
@@ -158,10 +162,10 @@ class Game:
         # For example, it could be the position of the car, its velocity, distance travelled, etc.
         # Adjust this method based on what state representation you need for your RL environment
         return {
-            "car_position": self.car.rect.center,
-            "velocity": self.car.velocity,
-            "distance_travelled": self.distance_travelled,
+            "car_x_position": self.car.rect.centerx,
             "current_speed_limit": self.current_speed_limit,
+            "next_bump_x_position": self.next_bump_x_position,
+            "next_bump_y_position": self.next_bump_y_position,
         }
 
     def display_end_message(self):
@@ -183,7 +187,7 @@ class Game:
     def generate_speed_signs(self):
         distances = range(0, END_POINT_DISTANCE + 1, 5000)
         for d in distances:
-            limit = random.choice([3, 5, 7, 10, 15])
+            limit = random.choice([3, 5, 7, 10])
             position = (SCREEN_WIDTH // 2 + ROAD_WIDTH - 20, -d)
             self.speed_signs.append(SpeedSign(limit, position))
 
@@ -211,15 +215,21 @@ class Game:
 
     def update_speed_bumps(self):
         for bump in self.speed_bumps:
+            if bump.collided or bump.passed:
+                pass
             bump.position = (bump.position[0], bump.position[1] + self.car.velocity)
             bump.rect.y = bump.position[1]
 
-            # Check if the car is near the sign
-            if (
-                self.car.rect.colliderect(bump.rect) and not bump.collided
-            ):  # Threshold for proximity
+            if abs(self.car.rect.y - bump.rect.y) < 1000:  # Threshold for proximity
+                self.next_bump_x_position = bump.rect.centerx
+                self.next_bump_y_position = bump.rect.centery
+
+            if self.car.rect.colliderect(bump.rect) and not bump.collided:
                 self.car.velocity *= 2 / 3
                 bump.collided = True
+
+            if self.car.rect.y < bump.rect.y:
+                bump.passed = True
 
 
 if __name__ == "__main__":

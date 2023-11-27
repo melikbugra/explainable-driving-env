@@ -10,6 +10,7 @@ class SpeedBump:
         self.image = None
         self.rect = pygame.Rect(position[0], position[1], self.size[0], self.size[1])
         self.collided = False
+        self.passed = False
 
     def create_image(self):
         # Create the image only when needed
