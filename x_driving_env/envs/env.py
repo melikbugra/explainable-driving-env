@@ -1,7 +1,7 @@
 import gym
 from gym import spaces
 import numpy as np
-from game import Game
+from .game import Game
 import pygame
 
 ROAD_MAX_VELOCITY = 15

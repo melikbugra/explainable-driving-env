@@ -2,12 +2,12 @@ import pygame
 import sys
 import random
 
-from constants import *
+from .constants import *
 
-from car import Car
-from road import Road
-from speed_sign import SpeedSign
-from speed_bump import SpeedBump
+from .car import Car
+from .road import Road
+from .speed_sign import SpeedSign
+from .speed_bump import SpeedBump
 
 
 class Game:
