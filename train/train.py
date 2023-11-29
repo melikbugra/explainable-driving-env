@@ -6,11 +6,14 @@ from x_driving_env.envs import XDrivingEnv
 
 trained = True
 
-env = make_vec_env(XDrivingEnv, n_envs=8)
+env = make_vec_env(
+    lambda: XDrivingEnv(bumps_activated=False),
+    n_envs=16,
+)
 
 if trained:
-    saved_model_path = "./models/ppo_model_960000_steps"
-    model = PPO.load(saved_model_path, env=env)
+    saved_model_path = "./models/ppo_model_4960000_steps"
+    model = PPO.load(saved_model_path, device="cuda:0", env=env)
 else:
     model = PPO(
         "MlpPolicy",
@@ -23,15 +26,16 @@ else:
         gamma=0.99,  # Discount factor
         gae_lambda=0.95,  # Factor for trade-off of bias vs variance for Generalized Advantage Estimator
         ent_coef=0.0,  # Entropy coefficient for exploration
-        policy_kwargs=dict(net_arch=dict(pi=[256, 256], vf=[256, 256])),
+        policy_kwargs=dict(net_arch=dict(pi=[128, 128], vf=[128, 128])),
+        device="cuda:0",
     )
 
 checkpoint_callback = CheckpointCallback(
     save_freq=10000, save_path="./models/", name_prefix="ppo_model"
 )
 
-model.learn(total_timesteps=int(1e6), callback=checkpoint_callback)
+model.learn(total_timesteps=int(10e6), callback=checkpoint_callback)
 
-model.save("ppo_driving")
+model.save("models/ppo_driving_last")
 
 env.close()

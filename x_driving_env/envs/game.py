@@ -11,8 +11,9 @@ from .speed_bump import SpeedBump
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, bumps_activated):
         self.screen = None  # Initialize without creating a Pygame window
+        self.bumps_activated = bumps_activated
         self.initial_state()
 
     def setup_rendering(self):
@@ -36,7 +37,8 @@ class Game:
         self.next_bump_y_position = -1000
         self.current_speed_sign_image = None
         self.generate_speed_signs()
-        self.generate_speed_bumps()
+        if self.bumps_activated:
+            self.generate_speed_bumps()
 
     def reset(self):
         self.initial_state()
@@ -93,9 +95,9 @@ class Game:
 
             for sign in self.speed_signs:
                 sign.draw(self.screen, render=True)
-
-            for bump in self.speed_bumps:
-                bump.draw(self.screen, render=True)
+            if self.bumps_activated:
+                for bump in self.speed_bumps:
+                    bump.draw(self.screen, render=True)
 
             self.car.draw(self.screen)
 
@@ -120,7 +122,8 @@ class Game:
         self.road.update(self.car.velocity)
         self.distance_travelled += self.car.velocity
         self.update_speed_signs()
-        self.update_speed_bumps()
+        if self.bumps_activated:
+            self.update_speed_bumps()
 
         # Update score only if below speed limit
         if self.car.velocity <= self.current_speed_limit + 1:
@@ -141,32 +144,30 @@ class Game:
             self.game_over = True
 
     def step(self, action):
-        # Apply an action and update the game state
         self.update_game(action)
 
-        # Calculate reward (this is just an example, adjust as needed)
-        reward = self.score  # or any other logic for reward calculation
+        reward = self.score
 
-        # Check if the game is over
         done = self.game_over
 
-        # Return the new state, reward, done, and any additional info
-        # State can be a representation of the game state (e.g., position of car, velocity, etc.)
         state = self.get_state_representation()
-        info = {}  # Additional info if needed
+        info = {}
 
         return state, reward, done, info
 
     def get_state_representation(self):
-        # This method should return the current state of the game
-        # For example, it could be the position of the car, its velocity, distance travelled, etc.
-        # Adjust this method based on what state representation you need for your RL environment
-        return {
-            "car_x_position": self.car.rect.centerx,
-            "current_speed_limit": self.current_speed_limit,
-            "next_bump_x_position": self.next_bump_x_position,
-            "next_bump_y_position": self.next_bump_y_position,
-        }
+        if self.bumps_activated:
+            return {
+                "car_x_position": self.car.rect.centerx,
+                "current_speed_limit": self.current_speed_limit,
+                "next_bump_x_position": self.next_bump_x_position,
+                "next_bump_y_position": self.next_bump_y_position,
+            }
+        else:
+            return {
+                "car_x_position": self.car.rect.centerx,
+                "current_speed_limit": self.current_speed_limit,
+            }
 
     def display_end_message(self):
         # Display "Game Over" and final score
@@ -225,7 +226,7 @@ class Game:
                 self.next_bump_y_position = bump.rect.centery
 
             if self.car.rect.colliderect(bump.rect) and not bump.collided:
-                self.car.velocity *= 2 / 3
+                self.car.velocity *= 1 / 4
                 bump.collided = True
 
             if self.car.rect.y < bump.rect.y:
