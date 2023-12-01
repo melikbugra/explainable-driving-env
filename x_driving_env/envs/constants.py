@@ -1,8 +1,14 @@
 # Constants
-MAX_GAME_TIME = 5000
-
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-END_POINT_DISTANCE = 100000  # Distance to reach for the game to end
+MAX_GAME_TIME = 2500
+
+ROAD_MAX_VELOCITY = 10
+KERB_MAX_VELOCITY = 7
+GRASS_MAX_VELOCITY = 4
+
+END_POINT_DISTANCE = (
+    MAX_GAME_TIME * ROAD_MAX_VELOCITY * 1000
+)  # Distance to reach for the game to end
 ASPHALT_COLOR = (70, 70, 70)  # Dark grey color for the road
 GRASS_COLOR = (0, 100, 0)  # Darker shades of green
 GRASS_SIZE = 50  # Size of each grass square
@@ -16,21 +22,17 @@ KERB_HEIGHT = 50
 GRASS_LEFT = ROAD_LEFT - KERB_WIDTH
 GRASS_RIGHT = ROAD_RIGHT + KERB_WIDTH
 
-SCORE_NORMALIZE = 1000
-PENALTY_CONSTANT = 0.1
+REWARD_NORMALIZE = 1000
+PENALTY_CONSTANT = 1
 
 # Constants for car movement
-ACCELERATION = 0.1  # Acceleration value when the up key is pressed
-DECELERATION = 0.1  # Deceleration value when the down key is pressed
+ACCELERATION = 0.05  # Acceleration value when the up key is pressed
+DECELERATION = 0.05  # Deceleration value when the down key is pressed
 
-ROAD_MIN_FREE_DECEL = 0.025
-KERB_MIN_FREE_DECEL = 0.025
-GRASS_MIN_FREE_DECEL = 0.025
+ROAD_MIN_FREE_DECEL = 0.01
+KERB_MIN_FREE_DECEL = 0.01
+GRASS_MIN_FREE_DECEL = 0.01
 
-ROAD_FRICTION = 0.03  # Existing friction value, used for the road
-KERB_FRICTION = 0.08  # Higher friction for kerbs
-GRASS_FRICTION = 0.09  # Even higher friction for grass
-
-ROAD_MAX_VELOCITY = 10
-KERB_MAX_VELOCITY = 7
-GRASS_MAX_VELOCITY = 4
+ROAD_FRICTION = 0.003  # Existing friction value, used for the road
+KERB_FRICTION = 0.008  # Higher friction for kerbs
+GRASS_FRICTION = 0.009  # Even higher friction for grass

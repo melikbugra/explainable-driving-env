@@ -13,18 +13,19 @@ class XDrivingEnv(gym.Env):
         super().__init__()
         self.bumps_activated = bumps_activated
         # Define action and observation space
-        self.action_space = spaces.Discrete(5)
         if self.bumps_activated:
+            self.action_space = spaces.Discrete(3)
             self.observation_space = spaces.Box(
-                low=np.array([0, 0, 350, -590]),
-                high=np.array([SCREEN_WIDTH, 10, 450, 410]),
-                dtype=np.float32,
+                low=np.array([0, 0, 350, -590], dtype=np.float64),
+                high=np.array([SCREEN_WIDTH, 10, 450, 410], dtype=np.float64),
+                dtype=np.float64,
             )
         else:
+            self.action_space = spaces.Discrete(5)
             self.observation_space = spaces.Box(
-                low=np.array([0, 0]),
-                high=np.array([SCREEN_WIDTH, 10]),
-                dtype=np.float32,
+                low=np.array([0, 0], dtype=np.float64),
+                high=np.array([SCREEN_WIDTH, 10], dtype=np.float64),
+                dtype=np.float64,
             )
 
         self.game = Game(bumps_activated)
@@ -42,7 +43,7 @@ class XDrivingEnv(gym.Env):
                     state["next_bump_x_position"],
                     state["next_bump_y_position"],
                 ],
-                dtype=np.float32,
+                dtype=np.float64,
             )
         else:
             observation = np.array(
@@ -50,7 +51,7 @@ class XDrivingEnv(gym.Env):
                     state["car_x_position"],
                     state["current_speed_limit"],
                 ],
-                dtype=np.float32,
+                dtype=np.float64,
             )
 
         return observation, reward, done, info
@@ -65,7 +66,7 @@ class XDrivingEnv(gym.Env):
                     state["next_bump_x_position"],
                     state["next_bump_y_position"],
                 ],
-                dtype=np.float32,
+                dtype=np.float64,
             )
         else:
             return np.array(
@@ -73,7 +74,7 @@ class XDrivingEnv(gym.Env):
                     state["car_x_position"],
                     state["current_speed_limit"],
                 ],
-                dtype=np.float32,
+                dtype=np.float64,
             )
 
     def render(self, mode="human"):

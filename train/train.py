@@ -4,11 +4,11 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.callbacks import CheckpointCallback
 from x_driving_env.envs import XDrivingEnv
 
-trained = True
+trained = False
 
 env = make_vec_env(
     lambda: XDrivingEnv(bumps_activated=False),
-    n_envs=16,
+    n_envs=8,
 )
 
 if trained:

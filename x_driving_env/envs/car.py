@@ -3,12 +3,13 @@ from .constants import *
 
 
 class Car:
-    def __init__(self):
+    def __init__(self, bumps_activated):
         self.size = (50, 100)
         self.image = pygame.Surface(
             self.size, pygame.SRCALPHA
         )  # Use SRCALPHA for transparency
         self.color = (0, 0, 255)  # Blue car
+        self.bumps_activated = bumps_activated
 
         # Draw the car body
         pygame.draw.rect(self.image, self.color, (0, 0, self.size[0], self.size[1]))
@@ -45,18 +46,18 @@ class Car:
         move_speed = 2  # Speed of lateral movement (should be int)
         self.turn_angle = 0  # Reset tire angle
 
-        if action == 1:
+        if action == 3 and self.bumps_activated:
             self.rect.x -= move_speed
             self.rect.x = max(self.rect.x, 0)  # Prevent moving off-screen to the left
             self.turn_angle = 30  # Turn tires left
-        if action == 3:
+        if action == 4 and self.bumps_activated:
             self.rect.x += move_speed
             right_edge = SCREEN_WIDTH - self.rect.width
             self.rect.x = min(
                 self.rect.x, right_edge
             )  # Prevent moving off-screen to the right
             self.turn_angle = -30  # Turn tires right
-        if action == 2:
+        if action == 1:
             self.acceleration = ACCELERATION
             if self.on_grass():
                 self.acceleration -= GRASS_FRICTION
@@ -68,7 +69,7 @@ class Car:
                     self.acceleration = -KERB_FRICTION
             elif self.on_road():
                 self.acceleration -= ROAD_FRICTION
-        elif action == 4:
+        elif action == 2:
             self.acceleration = -DECELERATION
             if self.on_grass():
                 self.acceleration -= GRASS_FRICTION
@@ -79,7 +80,7 @@ class Car:
 
             if self.velocity == 0:
                 self.acceleration = 0
-        else:
+        elif action == 0:
             # Determine the surface and apply corresponding friction
             self.acceleration = 0.0
             if self.on_grass():
@@ -109,11 +110,11 @@ class Car:
         keys = pygame.key.get_pressed()
         move_speed = 3  # Speed of lateral movement (should be int)
         self.turn_angle = 0  # Reset tire angle
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] and self.bumps_activated:
             self.rect.x -= move_speed
             self.rect.x = max(self.rect.x, 0)  # Prevent moving off-screen to the left
             self.turn_angle = 30  # Turn tires left
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] and self.bumps_activated:
             self.rect.x += move_speed
             right_edge = SCREEN_WIDTH - self.rect.width
             self.rect.x = min(

@@ -11,7 +11,7 @@ from .speed_bump import SpeedBump
 
 
 class Game:
-    def __init__(self, bumps_activated):
+    def __init__(self, bumps_activated=False):
         self.screen = None  # Initialize without creating a Pygame window
         self.bumps_activated = bumps_activated
         self.initial_state()
@@ -25,10 +25,11 @@ class Game:
 
     def initial_state(self):
         self.time = 0  # Record the start time
-        self.car = Car()
+        self.car = Car(self.bumps_activated)
         self.road = Road()
         self.distance_travelled = 0
         self.game_over = False
+        self.reward = 0
         self.score = 0
         self.speed_signs = []
         self.speed_bumps = []
@@ -79,14 +80,17 @@ class Game:
             self.draw_grass()
             self.road.draw(self.screen)
 
-            # Display velocity, acceleration, and score
+            # Display velocity, acceleration, and reward
             self.render_text(f"Velocity: {self.car.velocity*10:.2f}", (10, 10))
             self.render_text(f"Acceleration: {self.car.acceleration*10:.3f}", (10, 50))
             self.render_text(
-                f"Score: {float(self.score):.3f}", (10, 90)
-            )  # Display score
+                f"Reward: {float(self.reward):.4f}", (10, 90)
+            )  # Display reward
+            self.render_text(
+                f"Score: {float(self.score):.3f}", (10, 130)
+            )  # Display reward
 
-            # Draw the current speed sign image (smaller version) under the score
+            # Draw the current speed sign image (smaller version) under the reward
             if self.current_speed_sign_image:
                 self.screen.blit(
                     pygame.transform.scale(self.current_speed_sign_image, (40, 40)),
@@ -125,20 +129,22 @@ class Game:
         if self.bumps_activated:
             self.update_speed_bumps()
 
-        # Update score only if below speed limit
-        if self.car.velocity <= self.current_speed_limit + 1:
-            self.score = (
-                self.car.velocity + self.car.acceleration * 0 - PENALTY_CONSTANT
+        # Update reward only if below speed limit
+        if self.car.velocity <= self.current_speed_limit:
+            self.reward = (
+                self.car.velocity + self.car.acceleration * 10 - PENALTY_CONSTANT
             )
+
         else:
-            self.score = -self.car.acceleration * 1 - PENALTY_CONSTANT
+            self.reward = -self.car.acceleration * 100 - PENALTY_CONSTANT
 
         if self.car.on_kerbs():
-            self.score -= 3 * PENALTY_CONSTANT
+            self.reward -= 3 * PENALTY_CONSTANT
         elif self.car.on_grass():
-            self.score -= 10 * PENALTY_CONSTANT
+            self.reward -= 10 * PENALTY_CONSTANT
 
-        self.score /= SCORE_NORMALIZE
+        self.reward /= REWARD_NORMALIZE
+        self.score += self.reward
 
         if self.distance_travelled >= END_POINT_DISTANCE:
             self.game_over = True
@@ -146,7 +152,7 @@ class Game:
     def step(self, action):
         self.update_game(action)
 
-        reward = self.score
+        reward = self.reward
 
         done = self.game_over
 
@@ -170,20 +176,20 @@ class Game:
             }
 
     def display_end_message(self):
-        # Display "Game Over" and final score
+        # Display "Game Over" and final reward
         font = pygame.font.SysFont(None, 55)
         game_over_text = font.render("Game Over!", True, (0, 0, 0))
-        score_text = font.render(f"Final Score: {float(self.score)}", True, (0, 0, 0))
+        reward_text = font.render(f"Final Score: {float(self.score)}", True, (0, 0, 0))
 
         game_over_rect = game_over_text.get_rect(
             center=(SCREEN_WIDTH // 6, SCREEN_HEIGHT // 2 - 30)
         )
-        score_rect = score_text.get_rect(
+        reward_rect = reward_text.get_rect(
             center=(SCREEN_WIDTH // 6, SCREEN_HEIGHT // 2 + 30)
         )
 
         self.screen.blit(game_over_text, game_over_rect)
-        self.screen.blit(score_text, score_rect)
+        self.screen.blit(reward_text, reward_rect)
 
     def generate_speed_signs(self):
         distances = range(0, END_POINT_DISTANCE + 1, 5000)
