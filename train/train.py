@@ -12,7 +12,7 @@ env = make_vec_env(
 )
 
 if trained:
-    saved_model_path = "./models/ppo_model_4960000_steps"
+    saved_model_path = "./models/ppo_driving_last"
     model = PPO.load(saved_model_path, device="cuda:0", env=env)
 else:
     model = PPO(
@@ -25,16 +25,16 @@ else:
         n_epochs=10,  # Number of epochs when optimizing the surrogate loss
         gamma=0.99,  # Discount factor
         gae_lambda=0.95,  # Factor for trade-off of bias vs variance for Generalized Advantage Estimator
-        ent_coef=0.0,  # Entropy coefficient for exploration
-        policy_kwargs=dict(net_arch=dict(pi=[128, 128], vf=[128, 128])),
+        ent_coef=0.2,  # Entropy coefficient for exploration
+        policy_kwargs=dict(net_arch=dict(pi=[256, 512, 256], vf=[256, 512, 256])),
         device="cuda:0",
     )
 
 checkpoint_callback = CheckpointCallback(
-    save_freq=10000, save_path="./models/", name_prefix="ppo_model"
+    save_freq=5000, save_path="./models/", name_prefix="ppo_model"
 )
 
-model.learn(total_timesteps=int(10e6), callback=checkpoint_callback)
+model.learn(total_timesteps=int(5e6), callback=checkpoint_callback)
 
 model.save("models/ppo_driving_last")
 

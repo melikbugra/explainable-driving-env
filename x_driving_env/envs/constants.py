@@ -1,13 +1,13 @@
 # Constants
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-MAX_GAME_TIME = 2500
+MAX_GAME_TIME = 2000
 
 ROAD_MAX_VELOCITY = 10
 KERB_MAX_VELOCITY = 7
 GRASS_MAX_VELOCITY = 4
 
 END_POINT_DISTANCE = (
-    MAX_GAME_TIME * ROAD_MAX_VELOCITY * 1000
+    MAX_GAME_TIME * ROAD_MAX_VELOCITY
 )  # Distance to reach for the game to end
 ASPHALT_COLOR = (70, 70, 70)  # Dark grey color for the road
 GRASS_COLOR = (0, 100, 0)  # Darker shades of green

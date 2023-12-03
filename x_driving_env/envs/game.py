@@ -63,8 +63,8 @@ class Game:
             # Update and draw the game for one frame
             if not self.game_over:
                 self.draw(render)
-            else:
-                self.display_end_message()
+            # else:
+            #     self.display_end_message()
 
     def run_game(self):
         self.setup_rendering()
@@ -94,7 +94,7 @@ class Game:
             if self.current_speed_sign_image:
                 self.screen.blit(
                     pygame.transform.scale(self.current_speed_sign_image, (40, 40)),
-                    (10, 130),
+                    (10, 170),
                 )
 
             for sign in self.speed_signs:
@@ -171,7 +171,7 @@ class Game:
             }
         else:
             return {
-                "car_x_position": self.car.rect.centerx,
+                "car_speed": self.car.velocity,
                 "current_speed_limit": self.current_speed_limit,
             }
 
