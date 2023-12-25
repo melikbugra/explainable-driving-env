@@ -1,8 +1,9 @@
-from x_driving_env.envs.game import Game
+from x_driving_env.game.game import Game
 import cProfile
 
 if __name__ == "__main__":
-    game = Game(bumps_activated=False)
+    game = Game()
+    game.setup_rendering()
     # cProfile.run("game.run_game()")
 
     game.run_game()
