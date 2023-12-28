@@ -14,7 +14,7 @@ class XDrivingEnvBump(gym.Env):
 
         # Define action and observation space
 
-        self.action_space = spaces.Discrete(5)
+        self.action_space = spaces.MultiDiscrete([3, 3])
         self.observation_space = spaces.Box(
             low=np.array([0, 0, 0, 350, -590], dtype=np.float64),
             high=np.array([10, SCREEN_WIDTH, 10, 450, 410], dtype=np.float64),
@@ -25,7 +25,9 @@ class XDrivingEnvBump(gym.Env):
 
     def step(self, action):
         # Update game state and get necessary information
-        state, reward, done, info = self.game.step(action)
+        long_action = action[0]
+        lat_action = action[1]
+        state, reward, done, info = self.game.step(long_action, lat_action)
 
         observation = np.array(
             [

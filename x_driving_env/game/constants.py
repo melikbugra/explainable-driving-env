@@ -36,3 +36,5 @@ GRASS_MIN_FREE_DECEL = 0.01
 ROAD_FRICTION = 0.003  # Existing friction value, used for the road
 KERB_FRICTION = 0.008  # Higher friction for kerbs
 GRASS_FRICTION = 0.009  # Even higher friction for grass
+
+MIN_SPEED = 1

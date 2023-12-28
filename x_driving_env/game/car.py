@@ -21,7 +21,7 @@ class Car:
 
         self.rect = self.image.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150))
 
-        self.velocity = 0
+        self.velocity = MIN_SPEED
         self.acceleration = 0
         self.turn_angle = 0  # Angle for turning the tires
 
@@ -34,30 +34,30 @@ class Car:
         for tire in self.front_tires:
             tire.fill((0, 0, 0))  # Black tires
 
-    def update(self, action=None):
-        if action is not None:
+    def update(self, long_action=None, lat_action=None):
+        if long_action is not None and lat_action is not None:
             # Handle actions programmatically
-            self.handle_action(action)
+            self.handle_action(long_action, lat_action)
         else:
             # Handle keyboard input
             self.handle_keyboard_input()
 
-    def handle_action(self, action):
+    def handle_action(self, long_action, lat_action):
         move_speed = 2  # Speed of lateral movement (should be int)
         self.turn_angle = 0  # Reset tire angle
 
-        if action == 3 and self.bump_env:
+        if lat_action == 1 and self.bump_env:
             self.rect.x -= move_speed
             self.rect.x = max(self.rect.x, 0)  # Prevent moving off-screen to the left
             self.turn_angle = 30  # Turn tires left
-        if action == 4 and self.bump_env:
+        if lat_action == 2 and self.bump_env:
             self.rect.x += move_speed
             right_edge = SCREEN_WIDTH - self.rect.width
             self.rect.x = min(
                 self.rect.x, right_edge
             )  # Prevent moving off-screen to the right
             self.turn_angle = -30  # Turn tires right
-        if action == 1:
+        if long_action == 1:
             self.acceleration = ACCELERATION
             if self.on_grass():
                 self.acceleration -= GRASS_FRICTION
@@ -69,7 +69,7 @@ class Car:
                     self.acceleration = -KERB_FRICTION
             elif self.on_road():
                 self.acceleration -= ROAD_FRICTION
-        elif action == 2:
+        elif long_action == 2:
             self.acceleration = -DECELERATION
             if self.on_grass():
                 self.acceleration -= GRASS_FRICTION
@@ -78,9 +78,9 @@ class Car:
             elif self.on_road():
                 self.acceleration -= ROAD_FRICTION
 
-            if self.velocity == 0:
+            if self.velocity == MIN_SPEED:
                 self.acceleration = 0
-        elif action == 0:
+        elif long_action == 0:
             # Determine the surface and apply corresponding friction
             self.acceleration = 0.0
             if self.on_grass():
@@ -99,12 +99,12 @@ class Car:
                 else:
                     self.acceleration = -ROAD_MIN_FREE_DECEL
 
-            if self.velocity == 0:
+            if self.velocity == MIN_SPEED:
                 self.acceleration = 0
 
         # Update velocity based on acceleration
         self.velocity += self.acceleration
-        self.velocity = max(0, min(self.velocity, ROAD_MAX_VELOCITY))
+        self.velocity = max(MIN_SPEED, min(self.velocity, ROAD_MAX_VELOCITY))
 
     def handle_keyboard_input(self):
         keys = pygame.key.get_pressed()
@@ -142,7 +142,7 @@ class Car:
             elif self.on_road():
                 self.acceleration -= ROAD_FRICTION
 
-            if self.velocity == 0:
+            if self.velocity == MIN_SPEED:
                 self.acceleration = 0
         else:
             # Determine the surface and apply corresponding friction
@@ -163,12 +163,12 @@ class Car:
                 else:
                     self.acceleration = -ROAD_MIN_FREE_DECEL
 
-            if self.velocity == 0:
+            if self.velocity == MIN_SPEED:
                 self.acceleration = 0
 
         # Update velocity based on acceleration
         self.velocity += self.acceleration
-        self.velocity = max(0, min(self.velocity, ROAD_MAX_VELOCITY))
+        self.velocity = max(MIN_SPEED, min(self.velocity, ROAD_MAX_VELOCITY))
 
     def draw(self, screen):
         # Draw the car body

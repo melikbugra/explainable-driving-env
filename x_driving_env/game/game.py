@@ -118,14 +118,14 @@ class Game:
         )
         pygame.draw.rect(self.screen, GRASS_COLOR, right_grass_rect)
 
-    def update_game(self, action=None):
+    def update_game(self, long_action=None, lat_action=None):
         self.bump_collision_penalty = 0
         # Update the game state
         self.time += 1
         if self.time > MAX_GAME_TIME:
             self.game_over = True
 
-        self.car.update(action)
+        self.car.update(long_action, lat_action)
         self.road.update(self.car.velocity)
         self.distance_travelled += self.car.velocity
         self.update_speed_signs()
@@ -157,8 +157,8 @@ class Game:
         if self.distance_travelled >= END_POINT_DISTANCE:
             self.game_over = True
 
-    def step(self, action):
-        self.update_game(action)
+    def step(self, long_action, lat_action):
+        self.update_game(long_action, lat_action)
 
         reward = self.reward
 
