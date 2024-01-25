@@ -14,6 +14,7 @@ class Road:
 
     def draw(self):
         stripe_rects = self.get_stripe_rects()
+        kerb_rects = self.get_kerb_rects()
 
         self.batch.draw()
 
@@ -48,7 +49,7 @@ class Road:
         )
 
     def set_stripes(self):
-        self.stripes = []
+        stripes = []
 
         stripe_height = 100
         stripe_margin = 20
@@ -56,10 +57,12 @@ class Road:
 
         for i in range(0, SCREEN_HEIGHT, stripe_group_spacing):
             for j in range(3):  # Create 3 stripes in each group
-                self.stripes.append(i + (stripe_height + stripe_margin) * j)
+                stripes.append(i + (stripe_height + stripe_margin) * j)
+
+        return stripes
 
     def get_stripe_rects(self):
-        self.set_stripes()
+        stripes = self.set_stripes()
 
         stripe_width = 10
         stripe_height = 100
@@ -71,5 +74,43 @@ class Road:
                 height=stripe_height,
                 batch=self.batch,
             )
-            for stripe in self.stripes
+            for stripe in stripes
         ]
+
+    def set_kerbs(self):
+        self.kerb_offset = 0
+        kerbs = []
+        for y in range(0, SCREEN_HEIGHT // KERB_WIDTH):
+            kerbs.append(KERB_COLORS[y % 2])  # Alternating red and white
+        return kerbs
+
+    def get_kerb_rects(self):
+        kerbs = self.set_kerbs()
+
+        kerb_rects = []
+
+        for y in range(-KERB_HEIGHT, SCREEN_HEIGHT, KERB_HEIGHT):
+            kerb_color = kerbs[
+                (y // KERB_HEIGHT + int(self.kerb_offset) // KERB_HEIGHT) % len(kerbs)
+            ]
+
+            left_kerb = Rectangle(
+                x=GRASS_WIDTH,
+                y=y + int(self.kerb_offset) % KERB_HEIGHT,
+                width=KERB_WIDTH,
+                height=KERB_HEIGHT,
+                color=kerb_color,
+                batch=self.batch,
+            )
+            right_kerb = Rectangle(
+                x=GRASS_WIDTH + ROAD_WIDTH + KERB_WIDTH,
+                y=y + int(self.kerb_offset) % KERB_HEIGHT,
+                width=KERB_WIDTH,
+                height=KERB_HEIGHT,
+                color=kerb_color,
+                batch=self.batch,
+            )
+            kerb_rects.append(left_kerb)
+            kerb_rects.append(right_kerb)
+
+        return kerb_rects

@@ -19,9 +19,9 @@ class Car:
 
     def draw(self):
         # We put these here because they are only for visualization purposes
-        front_window_rect = self.get_front_window_rect()
-        rear_window_rect = self.get_rear_window_rect()
+        window_rects = self.get_window_rects()
         bodywork_line_rect = self.get_bodywork_line()
+        tire_rects = self.get_tire_rects()
 
         self.batch.draw()
 
@@ -35,24 +35,24 @@ class Car:
             batch=self.batch,
         )
 
-    def get_front_window_rect(self):
-        return Rectangle(
-            x=self.position_x + 10,
-            y=self.position_y + self.height - 30,
-            width=30,
-            height=20,
-            color=self.window_color,
-            batch=self.batch,
-        )
-
-    def get_rear_window_rect(self):
-        return Rectangle(
-            x=self.position_x + 10,
-            y=self.position_y + 10,
-            width=30,
-            height=20,
-            color=self.window_color,
-            batch=self.batch,
+    def get_window_rects(self):
+        return (
+            Rectangle(
+                x=self.position_x + 10,
+                y=self.position_y + self.height - 30,
+                width=30,
+                height=20,
+                color=self.window_color,
+                batch=self.batch,
+            ),
+            Rectangle(
+                x=self.position_x + 10,
+                y=self.position_y + 10,
+                width=30,
+                height=20,
+                color=self.window_color,
+                batch=self.batch,
+            ),
         )
 
     def get_bodywork_line(self):
@@ -64,3 +64,51 @@ class Car:
             color=(0, 0, 0),
             batch=self.batch,
         )
+
+    def get_tire_rects(self):
+        tire_width = 8
+        tire_height = 20
+
+        tires = []
+
+        front_left_tire = Rectangle(
+            x=self.position_x - tire_width / 3,
+            y=self.position_y + self.height - 26,
+            width=tire_width,
+            height=tire_height,
+            color=(0, 0, 0),
+            batch=self.batch,
+        )
+        tires.append(front_left_tire)
+
+        front_right_tire = Rectangle(
+            x=self.position_x + self.width - tire_width * 2 / 3,
+            y=self.position_y + self.height - 26,
+            width=tire_width,
+            height=tire_height,
+            color=(0, 0, 0),
+            batch=self.batch,
+        )
+        tires.append(front_right_tire)
+
+        rear_left_tire = Rectangle(
+            x=self.position_x - tire_width / 3,
+            y=self.position_y + 6,
+            width=tire_width,
+            height=tire_height,
+            color=(0, 0, 0),
+            batch=self.batch,
+        )
+        tires.append(rear_left_tire)
+
+        rear_right_tire = Rectangle(
+            x=self.position_x + self.width - tire_width * 2 / 3,
+            y=self.position_y + 6,
+            width=tire_width,
+            height=tire_height,
+            color=(0, 0, 0),
+            batch=self.batch,
+        )
+        tires.append(rear_right_tire)
+
+        return tires
