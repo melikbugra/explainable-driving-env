@@ -36,9 +36,9 @@ class Game:
         self.score = 0
         self.speed_signs = []
         self.speed_bumps = []
-        self.current_speed_limit = 25
-        self.next_bump_x_position = -1000
-        self.next_bump_y_position = 1000
+        self.current_speed_limit = 10
+        self.next_bump_x_position = 0
+        self.next_bump_y_position = 0
         self.current_speed_sign_image = None
         self.generate_speed_signs()
         if self.bumps_activated:
@@ -73,9 +73,12 @@ class Game:
     def run_game(self):
         while not self.game_over:
             self.update_game()
+            state = self.get_state_representation()
             self.run(render=True)
             pygame.display.flip()
             self.clock.tick(60)
+
+            print(state)
 
     def draw(self, render=False):
         if render:
@@ -157,7 +160,7 @@ class Game:
         if self.distance_travelled >= END_POINT_DISTANCE:
             self.game_over = True
 
-    def step(self, long_action, lat_action):
+    def step(self, long_action, lat_action=None):
         self.update_game(long_action, lat_action)
 
         reward = self.reward

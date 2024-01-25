@@ -35,14 +35,14 @@ class Car:
             tire.fill((0, 0, 0))  # Black tires
 
     def update(self, long_action=None, lat_action=None):
-        if long_action is not None and lat_action is not None:
+        if long_action is not None:
             # Handle actions programmatically
             self.handle_action(long_action, lat_action)
         else:
             # Handle keyboard input
             self.handle_keyboard_input()
 
-    def handle_action(self, long_action, lat_action):
+    def handle_action(self, long_action, lat_action=None):
         move_speed = 2  # Speed of lateral movement (should be int)
         self.turn_angle = 0  # Reset tire angle
 

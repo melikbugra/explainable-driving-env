@@ -24,12 +24,20 @@ class XDrivingEnv(gym.Env):
 
     def step(self, action):
         # Update game state and get necessary information
+
         state, reward, done, info = self.game.step(action)
+
+        car_speed_norm = (state["car_speed"] - self.observation_space.low[0]) / (
+            self.observation_space.high[0] - self.observation_space.low[0]
+        )
+        current_speed_limit_norm = (
+            state["current_speed_limit"] - self.observation_space.low[1]
+        ) / (self.observation_space.high[1] - self.observation_space.low[1])
 
         observation = np.array(
             [
-                state["car_speed"],
-                state["current_speed_limit"],
+                car_speed_norm,
+                current_speed_limit_norm,
             ],
             dtype=np.float64,
         )
@@ -38,10 +46,17 @@ class XDrivingEnv(gym.Env):
 
     def reset(self):
         state = self.game.reset()
+        car_speed_norm = (state["car_speed"] - self.observation_space.low[0]) / (
+            self.observation_space.high[0] - self.observation_space.low[0]
+        )
+        current_speed_limit_norm = (
+            state["current_speed_limit"] - self.observation_space.low[1]
+        ) / (self.observation_space.high[1] - self.observation_space.low[1])
+
         return np.array(
             [
-                state["car_speed"],
-                state["current_speed_limit"],
+                car_speed_norm,
+                current_speed_limit_norm,
             ],
             dtype=np.float64,
         )
