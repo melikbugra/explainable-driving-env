@@ -7,17 +7,18 @@ from .road import Road
 
 
 class Game:
-    def __init__(self, render=False):
-        # Initialize game...
-        self.window: Window = None
-        if render:
-            self.window = Window(
-                width=SCREEN_WIDTH, height=SCREEN_HEIGHT, caption="Pyglet Game"
-            )
-            self.window.push_handlers(self)
-
-        self.car = Car()
+    def __init__(self, bumps_activated=False, bump_env=False):
+        self.car = Car(self, bump_env=bump_env)
         self.road = Road()
+
+    def setup_rendering(self):
+        self.window = Window(
+            width=SCREEN_WIDTH, height=SCREEN_HEIGHT, caption="Explainable Driving Env"
+        )
+        self.key_handler = key.KeyStateHandler()
+        self.keys = {}
+        self.window.push_handlers(self)
+        self.window.push_handlers(self.key_handler)
 
     def on_draw(self):
         self.window.clear()
@@ -25,7 +26,14 @@ class Game:
         self.road.draw()
         self.car.draw()
 
+    def update_game(self, dt):
+        self.car.update()
 
-if __name__ == "__main__":
-    game = Game(True)
-    pyglet.app.run()
+    def on_key_press(self, symbol, modifiers):
+        self.keys[symbol] = True
+
+    def on_key_release(self, symbol, modifiers):
+        del self.keys[symbol]
+
+    def is_key_pressed(self, symbol):
+        return self.keys.get(symbol, False)
