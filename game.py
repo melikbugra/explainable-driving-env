@@ -148,9 +148,9 @@ class Game:
             self.reward = -self.car.acceleration * 100
 
         if self.car.on_kerbs():
-            self.reward -= 500
+            self.reward -= 3
         elif self.car.on_grass():
-            self.reward -= 1000
+            self.reward -= 10
 
         if self.bumps_activated:
             self.reward += (

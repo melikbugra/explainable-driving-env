@@ -16,7 +16,7 @@ class XDrivingEnvBump(gym.Env):
 
         self.action_space = spaces.MultiDiscrete([3, 3])
         self.observation_space = spaces.Box(
-            low=np.array([0, 0, 0, 350, -590], dtype=np.float64),
+            low=np.array([0, 3, 0, 350, -590], dtype=np.float64),
             high=np.array([10, 10, SCREEN_WIDTH, 450, 410], dtype=np.float64),
             dtype=np.float64,
         )
