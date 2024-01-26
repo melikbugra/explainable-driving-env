@@ -30,3 +30,8 @@ GRASS_FRICTION = 0.009  # Even higher friction for grass
 ROAD_MAX_VELOCITY = 10
 KERB_MAX_VELOCITY = 7
 GRASS_MAX_VELOCITY = 4
+
+# End Point
+END_POINT_DISTANCE = (
+    MAX_GAME_TIME * ROAD_MAX_VELOCITY
+)  # Distance to reach for the game to end

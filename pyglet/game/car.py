@@ -24,10 +24,12 @@ class Car:
         self.batch = Batch()
 
     def get_pressed_keys(self):
-        return self.game.keys
+        if self.game.rendering_set:
+            return self.game.keys
 
     def is_key_pressed(self, symbol):
-        return self.get_pressed_keys().get(symbol, False)
+        if self.game.rendering_set:
+            return self.get_pressed_keys().get(symbol, False)
 
     def draw(self):
         body_rect = self.get_body_rect()

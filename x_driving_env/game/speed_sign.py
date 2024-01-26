@@ -18,6 +18,7 @@ class SpeedSign:
         )  # White background
         pygame.draw.circle(self.image, (255, 0, 0), (40, 40), 40, 10)  # Red circle
         font = pygame.font.SysFont(None, 42)
+        print(font)
         text = font.render(str(self.limit * 10), True, (0, 0, 0))
         text_rect = text.get_rect(center=(40, 40))
         self.image.blit(text, text_rect)
