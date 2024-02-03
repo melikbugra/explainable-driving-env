@@ -148,9 +148,9 @@ class Game:
             self.reward = -self.car.acceleration * 100
 
         if self.car.on_kerbs():
-            self.reward -= 500
+            self.reward -= 50
         elif self.car.on_grass():
-            self.reward -= 1000
+            self.reward -= 100
 
         if self.bumps_activated:
             self.reward += (
@@ -247,7 +247,7 @@ class Game:
                 self.next_bump_y_position = bump.rect.centery
 
             if self.car.rect.colliderect(bump.rect) and not bump.collided:
-                self.bump_collision_penalty = -self.car.velocity
+                self.bump_collision_penalty = -10
                 self.car.velocity *= 1 / 5
                 bump.collided = True
 

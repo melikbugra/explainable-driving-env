@@ -1,5 +1,5 @@
-import gym
-from gym import spaces
+import gymnasium
+from gymnasium import spaces
 import numpy as np
 from ..game.game import Game
 import pygame
@@ -8,7 +8,7 @@ ROAD_MAX_VELOCITY = 15
 SCREEN_WIDTH = 800
 
 
-class XDrivingEnv(gym.Env):
+class XDrivingEnv(gymnasium.Env):
     def __init__(self):
         super().__init__()
         # Define action and observation space
@@ -26,6 +26,8 @@ class XDrivingEnv(gym.Env):
         # Update game state and get necessary information
 
         state, reward, done, info = self.game.step(action)
+        terminated = done
+        truncated = False
 
         car_speed_norm = (state["car_speed"] - self.observation_space.low[0]) / (
             self.observation_space.high[0] - self.observation_space.low[0]
@@ -42,9 +44,10 @@ class XDrivingEnv(gym.Env):
             dtype=np.float64,
         )
 
-        return observation, reward, done, info
+        return observation, reward, terminated, truncated, info
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
         state = self.game.reset()
         car_speed_norm = (state["car_speed"] - self.observation_space.low[0]) / (
             self.observation_space.high[0] - self.observation_space.low[0]
@@ -53,12 +56,17 @@ class XDrivingEnv(gym.Env):
             state["current_speed_limit"] - self.observation_space.low[1]
         ) / (self.observation_space.high[1] - self.observation_space.low[1])
 
-        return np.array(
-            [
-                car_speed_norm,
-                current_speed_limit_norm,
-            ],
-            dtype=np.float64,
+        info = {}
+
+        return (
+            np.array(
+                [
+                    car_speed_norm,
+                    current_speed_limit_norm,
+                ],
+                dtype=np.float64,
+            ),
+            info,
         )
 
     def render(self, mode="human"):

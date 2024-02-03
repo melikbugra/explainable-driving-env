@@ -1,5 +1,5 @@
-import gym
-from gym import spaces
+import gymnasium
+from gymnasium import spaces
 import numpy as np
 from ..game.game import Game
 import pygame
@@ -8,7 +8,7 @@ ROAD_MAX_VELOCITY = 15
 SCREEN_WIDTH = 800
 
 
-class XDrivingEnvBump(gym.Env):
+class XDrivingEnvBump(gymnasium.Env):
     def __init__(self, bumps_activated=True):
         super().__init__()
 
@@ -28,6 +28,8 @@ class XDrivingEnvBump(gym.Env):
         long_action = action[0]
         lat_action = action[1]
         state, reward, done, info = self.game.step(long_action, lat_action)
+        terminated = done
+        truncated = False
 
         car_speed_norm = (state["car_speed"] - self.observation_space.low[0]) / (
             self.observation_space.high[0] - self.observation_space.low[0]
@@ -58,9 +60,10 @@ class XDrivingEnvBump(gym.Env):
             dtype=np.float64,
         )
 
-        return observation, reward, done, info
+        return observation, reward, terminated, truncated, info
 
-    def reset(self):
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
         state = self.game.reset()
         car_speed_norm = (state["car_speed"] - self.observation_space.low[0]) / (
             self.observation_space.high[0] - self.observation_space.low[0]
@@ -80,15 +83,21 @@ class XDrivingEnvBump(gym.Env):
         next_bump_y_position_norm = (
             state["next_bump_y_position"] - self.observation_space.low[4]
         ) / (self.observation_space.high[4] - self.observation_space.low[4])
-        return np.array(
-            [
-                car_speed_norm,
-                current_speed_limit_norm,
-                car_x_position_norm,
-                next_bump_x_position_norm,
-                next_bump_y_position_norm,
-            ],
-            dtype=np.float64,
+
+        info = {}
+
+        return (
+            np.array(
+                [
+                    car_speed_norm,
+                    current_speed_limit_norm,
+                    car_x_position_norm,
+                    next_bump_x_position_norm,
+                    next_bump_y_position_norm,
+                ],
+                dtype=np.float64,
+            ),
+            info,
         )
 
     def render(self, mode="human"):
