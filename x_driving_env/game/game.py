@@ -46,7 +46,9 @@ class Game:
         self.prev_speed_sign: SpeedSign = None
         self.generate_next_speed_sign(initial=True)
         if self.bumps_activated:
-            self.generate_speed_bumps()
+            self.next_speed_bump: SpeedBump = None
+            self.prev_speed_bump: SpeedBump = None
+            self.generate_next_speed_bump(initial=True)
 
     def reset(self):
         self.initial_state()
@@ -105,10 +107,12 @@ class Game:
                 )
 
             self.next_speed_sign.draw(self.screen, render=True)
-            self.prev_speed_sign.draw(self.screen, render=True)
+            if self.prev_speed_sign:
+                self.prev_speed_sign.draw(self.screen, render=True)
             if self.bumps_activated:
-                for bump in self.speed_bumps:
-                    bump.draw(self.screen, render=True)
+                self.next_speed_bump.draw(self.screen, render=True)
+                if self.prev_speed_bump:
+                    self.prev_speed_bump.draw(self.screen, render=True)
 
             self.car.draw(self.screen)
 
@@ -206,28 +210,22 @@ class Game:
 
     def generate_next_speed_sign(self, initial=False):
         if initial:
-            distance = self.car.rect.y - 100  # Starting distance for the first sign
+            distance = self.car.rect.y - 2
         else:
-            distance = (
-                -self.car.rect.y - 1500
-            )  # Distance for the next sign based on car's position
+            distance = -self.car.rect.y - 1500
 
         limit = random.choice(self.speed_limits)
         position = (SCREEN_WIDTH // 2 + ROAD_WIDTH - 20, distance)
-        self.next_speed_sign = SpeedSign(limit, position)  # Store the next speed sign
+        self.next_speed_sign = SpeedSign(limit, position)
 
     def update_speed_signs(self):
-        # Check if the speed sign is passed
-        # if self.car.rect.y == self.next_speed_sign.rect.y:
-        #     self.generate_next_speed_sign()  # Generate the next speed sign
-        # Update the position of the next speed sign
         self.next_speed_sign.update(self.car.velocity)
         if self.prev_speed_sign:
             self.prev_speed_sign.update(self.car.velocity)
 
         # Check if the car is near the sign
         if (
-            abs(self.car.rect.y - self.next_speed_sign.rect.y) < 100
+            self.car.rect.y - self.next_speed_sign.rect.y <= 0
         ):  # Threshold for proximity
             self.current_speed_limit = self.next_speed_sign.limit
             self.current_speed_sign_image = (
@@ -236,36 +234,38 @@ class Game:
             self.prev_speed_sign = self.next_speed_sign
             self.generate_next_speed_sign()  # Generate the next speed sign
 
-    def generate_speed_bumps(self):
-        distances = range(0, END_POINT_DISTANCE + 1, 1000)
-        for d in distances:
-            lane = random.choice(["left", "right"])
-            if lane == "left":
-                position = (ROAD_LEFT + 10, -d)
-            else:
-                position = (ROAD_RIGHT - 90, -d)
-            self.speed_bumps.append(SpeedBump(position))
+    def generate_next_speed_bump(self, initial=False):
+        if initial:
+            distance = 0
+        else:
+            distance = -self.car.rect.y - 1000
+
+        lane = random.choice(["left", "right"])
+        if lane == "left":
+            position = (ROAD_LEFT + 10, distance)
+        else:
+            position = (ROAD_RIGHT - 90, distance)
+        self.next_speed_bump = SpeedBump(position)
 
     def update_speed_bumps(self):
         self.collided_a_bump = False
-        for bump in self.speed_bumps:
-            if bump.collided or bump.passed:
-                pass
-            bump.position = (bump.position[0], bump.position[1] + self.car.velocity)
-            bump.rect.y = bump.position[1]
+        self.next_speed_bump.update(self.car.velocity)
+        if self.prev_speed_bump:
+            self.prev_speed_bump.update(self.car.velocity)
+        self.next_bump_x_position = self.next_speed_bump.rect.centerx
+        self.next_bump_y_position = self.next_speed_bump.rect.centery
+        if (
+            self.car.rect.colliderect(self.next_speed_bump.rect)
+            and not self.next_speed_bump.collided
+        ):
+            self.bump_collision_penalty = -10
+            self.collided_a_bump = True
+            self.car.velocity *= 1 / 5
+            self.next_speed_bump.collided = True
 
-            if abs(self.car.rect.y - bump.rect.y) < 1000:  # Threshold for proximity
-                self.next_bump_x_position = bump.rect.centerx
-                self.next_bump_y_position = bump.rect.centery
-
-            if self.car.rect.colliderect(bump.rect) and not bump.collided:
-                self.bump_collision_penalty = -10
-                self.collided_a_bump = True
-                self.car.velocity *= 1 / 5
-                bump.collided = True
-
-            if self.car.rect.y < bump.rect.y:
-                bump.passed = True
+        if self.car.rect.bottom < self.next_speed_bump.rect.y:
+            self.prev_speed_bump = self.next_speed_bump
+            self.generate_next_speed_bump()
 
 
 if __name__ == "__main__":

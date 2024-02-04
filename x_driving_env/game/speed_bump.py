@@ -42,3 +42,10 @@ class SpeedBump:
             if not self.image:
                 self.create_image()
             screen.blit(self.image, self.rect.topleft)
+
+    def update(self, car_velocity):
+        self.position = (
+            self.position[0],
+            self.position[1] + car_velocity,
+        )
+        self.rect.y = self.position[1]

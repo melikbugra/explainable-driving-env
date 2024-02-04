@@ -22,14 +22,15 @@ def run_with_env():
 
 
 if __name__ == "__main__":
-    game = Game(bump_env=False, bumps_activated=False)
-    game.setup_rendering()
-    # profile = cProfile.Profile()
-    # profile.enable()
-    # run_random()
-    # profile.disable()
+    # game = Game(bump_env=True, bumps_activated=True)
+    # game.setup_rendering()
 
-    # profile.print_stats(sort="time")
+    # game.run_game()
+
+    profile = cProfile.Profile()
+    profile.enable()
+    run_random()
+    profile.disable()
+
+    profile.print_stats(sort="time")
     # cProfile.run("run_with_env()", sort=)
-
-    game.run_game()
