@@ -127,7 +127,7 @@ class Game:
         )
         pygame.draw.rect(self.screen, GRASS_COLOR, right_grass_rect)
 
-    def update_game(self, long_action=None, lat_action=None):
+    def update_game(self, long_action=None, lat_action=None, gym: bool = False):
         self.bump_collision_penalty = 0
         # Update the game state
         self.time += 1
@@ -135,7 +135,8 @@ class Game:
             self.game_over = True
 
         self.car.update(long_action, lat_action)
-        self.road.update(self.car.velocity)
+        if not gym:
+            self.road.update(self.car.velocity)
         self.distance_travelled += self.car.velocity
         self.update_speed_signs()
         if self.bumps_activated:
@@ -166,7 +167,7 @@ class Game:
             self.game_over = True
 
     def step(self, long_action, lat_action=None):
-        self.update_game(long_action, lat_action)
+        self.update_game(long_action, lat_action, gym=True)
 
         reward = self.reward
 
