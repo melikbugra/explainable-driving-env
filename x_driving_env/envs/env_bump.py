@@ -4,8 +4,9 @@ import numpy as np
 from ..game.game import Game
 import pygame
 
-ROAD_MAX_VELOCITY = 15
 SCREEN_WIDTH = 800
+CAR_WIDTH = 50
+CAR_MAX_X = SCREEN_WIDTH - CAR_WIDTH
 
 
 class XDrivingEnvBump(gymnasium.Env):
@@ -16,8 +17,8 @@ class XDrivingEnvBump(gymnasium.Env):
 
         self.action_space = spaces.MultiDiscrete([3, 3])
         self.observation_space = spaces.Box(
-            low=np.array([0, 3, 0, 350, -590], dtype=np.float64),
-            high=np.array([10, 10, SCREEN_WIDTH, 450, 410], dtype=np.float64),
+            low=np.array([0, 3, 3, -1819, 0, 0, -1379], dtype=np.float64),
+            high=np.array([10, 10, 10, 480, CAR_MAX_X, 1, 521], dtype=np.float64),
             dtype=np.float64,
         )
 
@@ -35,6 +36,8 @@ class XDrivingEnvBump(gymnasium.Env):
             [
                 state["car_speed"],
                 state["current_speed_limit"],
+                state["next_speed_limit"],
+                state["next_sign_y_position"],
                 state["car_x_position"],
                 state["next_bump_x_position"],
                 state["next_bump_y_position"],
@@ -55,6 +58,8 @@ class XDrivingEnvBump(gymnasium.Env):
                 [
                     state["car_speed"],
                     state["current_speed_limit"],
+                    state["next_speed_limit"],
+                    state["next_sign_y_position"],
                     state["car_x_position"],
                     state["next_bump_x_position"],
                     state["next_bump_y_position"],

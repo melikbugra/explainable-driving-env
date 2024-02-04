@@ -38,8 +38,10 @@ class Game:
         self.speed_bumps = []
         self.speed_limits = [3, 5, 7, 10]
         self.current_speed_limit = 10
-        self.next_bump_x_position = 0
+        self.next_speed_limit = None
+        self.next_bump_lane = 0
         self.next_bump_y_position = 0
+        self.next_sign_y_position = 0
         self.current_speed_sign_image = None
         self.collided_a_bump: bool = False
         self.next_speed_sign: SpeedSign = None
@@ -64,6 +66,7 @@ class Game:
         if not self.rendering_set:
             self.setup_rendering()
         if render:
+            self.clock.tick(60)
             # Process events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -82,7 +85,6 @@ class Game:
             state = self.get_state_representation()
             self.run(render=True)
             pygame.display.flip()
-            self.clock.tick(60)
 
     def draw(self, render=False):
         if render:
@@ -183,14 +185,18 @@ class Game:
             return {
                 "car_speed": self.car.velocity,
                 "current_speed_limit": self.current_speed_limit,
+                "next_speed_limit": self.next_speed_limit,
+                "next_sign_y_position": self.next_sign_y_position,
                 "car_x_position": self.car.rect.centerx,
-                "next_bump_x_position": self.next_bump_x_position,
+                "next_bump_lane": self.next_bump_lane,
                 "next_bump_y_position": self.next_bump_y_position,
             }
         else:
             return {
                 "car_speed": self.car.velocity,
                 "current_speed_limit": self.current_speed_limit,
+                "next_speed_limit": self.next_speed_limit,
+                "next_sign_y_position": self.next_sign_y_position,
             }
 
     def display_end_message(self):
@@ -218,11 +224,14 @@ class Game:
         limit = random.choice(self.speed_limits)
         position = (SCREEN_WIDTH // 2 + ROAD_WIDTH - 20, distance)
         self.next_speed_sign = SpeedSign(limit, position)
+        self.next_speed_limit = self.next_speed_sign.limit
 
     def update_speed_signs(self):
         self.next_speed_sign.update(self.car.velocity)
         if self.prev_speed_sign:
             self.prev_speed_sign.update(self.car.velocity)
+
+        self.next_sign_y_position = self.next_speed_sign.rect.bottom
 
         # Check if the car is near the sign
         if (
@@ -246,15 +255,15 @@ class Game:
             position = (ROAD_LEFT + 10, distance)
         else:
             position = (ROAD_RIGHT - 90, distance)
-        self.next_speed_bump = SpeedBump(position)
+        self.next_speed_bump = SpeedBump(position, lane)
 
     def update_speed_bumps(self):
         self.collided_a_bump = False
         self.next_speed_bump.update(self.car.velocity)
         if self.prev_speed_bump:
             self.prev_speed_bump.update(self.car.velocity)
-        self.next_bump_x_position = self.next_speed_bump.rect.centerx
-        self.next_bump_y_position = self.next_speed_bump.rect.centery
+        self.next_bump_lane = self.next_speed_bump.lane
+        self.next_bump_y_position = self.next_speed_bump.rect.bottom
         if (
             self.car.rect.colliderect(self.next_speed_bump.rect)
             and not self.next_speed_bump.collided

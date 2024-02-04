@@ -3,7 +3,7 @@ from .constants import *
 
 
 class SpeedBump:
-    def __init__(self, position, num_rectangles=4):
+    def __init__(self, position, lane: str, num_rectangles=4):
         self.position = position
         self.num_rectangles = num_rectangles
         self.size = (num_rectangles * (20), 20)
@@ -11,6 +11,10 @@ class SpeedBump:
         self.rect = pygame.Rect(position[0], position[1], self.size[0], self.size[1])
         self.collided = False
         self.passed = False
+        if lane == "left":
+            self.lane = 0
+        elif lane == "right":
+            self.lane = 1
 
     def create_image(self):
         # Create the image only when needed

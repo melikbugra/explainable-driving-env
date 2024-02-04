@@ -27,7 +27,7 @@ REWARD_CONSTANT = 100
 
 # Constants for car movement
 ACCELERATION = 0.05  # Acceleration value when the up key is pressed
-DECELERATION = 0.05  # Deceleration value when the down key is pressed
+DECELERATION = 0.1  # Deceleration value when the down key is pressed
 
 ROAD_MIN_FREE_DECEL = 0.01
 KERB_MIN_FREE_DECEL = 0.01
