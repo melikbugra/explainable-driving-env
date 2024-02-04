@@ -59,23 +59,29 @@ class Car:
             self.turn_angle = -30  # Turn tires right
         if long_action == 1:
             self.acceleration = ACCELERATION
-            if self.on_grass():
-                self.acceleration -= GRASS_FRICTION
-                if self.velocity > GRASS_MAX_VELOCITY:
-                    self.acceleration = -GRASS_FRICTION
-            elif self.on_kerbs():
-                self.acceleration -= KERB_FRICTION
-                if self.velocity > KERB_MAX_VELOCITY:
-                    self.acceleration = -KERB_FRICTION
-            elif self.on_road():
+            if self.bump_env:
+                if self.on_grass():
+                    self.acceleration -= GRASS_FRICTION
+                    if self.velocity > GRASS_MAX_VELOCITY:
+                        self.acceleration = -GRASS_FRICTION
+                elif self.on_kerbs():
+                    self.acceleration -= KERB_FRICTION
+                    if self.velocity > KERB_MAX_VELOCITY:
+                        self.acceleration = -KERB_FRICTION
+                elif self.on_road():
+                    self.acceleration -= ROAD_FRICTION
+            else:
                 self.acceleration -= ROAD_FRICTION
         elif long_action == 2:
             self.acceleration = -DECELERATION
-            if self.on_grass():
-                self.acceleration -= GRASS_FRICTION
-            elif self.on_kerbs():
-                self.acceleration -= KERB_FRICTION
-            elif self.on_road():
+            if self.bump_env:
+                if self.on_grass():
+                    self.acceleration -= GRASS_FRICTION
+                elif self.on_kerbs():
+                    self.acceleration -= KERB_FRICTION
+                elif self.on_road():
+                    self.acceleration -= ROAD_FRICTION
+            else:
                 self.acceleration -= ROAD_FRICTION
 
             if self.velocity == MIN_SPEED:
@@ -83,17 +89,23 @@ class Car:
         elif long_action == 0:
             # Determine the surface and apply corresponding friction
             self.acceleration = 0.0
-            if self.on_grass():
-                if self.acceleration > -GRASS_MIN_FREE_DECEL:
-                    self.acceleration -= GRASS_FRICTION
-                else:
-                    self.acceleration = -GRASS_MIN_FREE_DECEL
-            elif self.on_kerbs():
-                if self.acceleration > -KERB_MIN_FREE_DECEL:
-                    self.acceleration -= KERB_FRICTION
-                else:
-                    self.acceleration = -KERB_MIN_FREE_DECEL
-            elif self.on_road():
+            if self.bump_env:
+                if self.on_grass():
+                    if self.acceleration > -GRASS_MIN_FREE_DECEL:
+                        self.acceleration -= GRASS_FRICTION
+                    else:
+                        self.acceleration = -GRASS_MIN_FREE_DECEL
+                elif self.on_kerbs():
+                    if self.acceleration > -KERB_MIN_FREE_DECEL:
+                        self.acceleration -= KERB_FRICTION
+                    else:
+                        self.acceleration = -KERB_MIN_FREE_DECEL
+                elif self.on_road():
+                    if self.acceleration > -ROAD_MIN_FREE_DECEL:
+                        self.acceleration -= ROAD_FRICTION
+                    else:
+                        self.acceleration = -ROAD_MIN_FREE_DECEL
+            else:
                 if self.acceleration > -ROAD_MIN_FREE_DECEL:
                     self.acceleration -= ROAD_FRICTION
                 else:
@@ -123,23 +135,29 @@ class Car:
             self.turn_angle = -30  # Turn tires right
         if keys[pygame.K_UP]:
             self.acceleration = ACCELERATION
-            if self.on_grass():
-                self.acceleration -= GRASS_FRICTION
-                if self.velocity > GRASS_MAX_VELOCITY:
-                    self.acceleration = -GRASS_FRICTION
-            elif self.on_kerbs():
-                self.acceleration -= KERB_FRICTION
-                if self.velocity > KERB_MAX_VELOCITY:
-                    self.acceleration = -KERB_FRICTION
-            elif self.on_road():
+            if self.bump_env:
+                if self.on_grass():
+                    self.acceleration -= GRASS_FRICTION
+                    if self.velocity > GRASS_MAX_VELOCITY:
+                        self.acceleration = -GRASS_FRICTION
+                elif self.on_kerbs():
+                    self.acceleration -= KERB_FRICTION
+                    if self.velocity > KERB_MAX_VELOCITY:
+                        self.acceleration = -KERB_FRICTION
+                elif self.on_road():
+                    self.acceleration -= ROAD_FRICTION
+            else:
                 self.acceleration -= ROAD_FRICTION
         elif keys[pygame.K_DOWN]:
             self.acceleration = -DECELERATION
-            if self.on_grass():
-                self.acceleration -= GRASS_FRICTION
-            elif self.on_kerbs():
-                self.acceleration -= KERB_FRICTION
-            elif self.on_road():
+            if self.bump_env:
+                if self.on_grass():
+                    self.acceleration -= GRASS_FRICTION
+                elif self.on_kerbs():
+                    self.acceleration -= KERB_FRICTION
+                elif self.on_road():
+                    self.acceleration -= ROAD_FRICTION
+            else:
                 self.acceleration -= ROAD_FRICTION
 
             if self.velocity == MIN_SPEED:
@@ -147,17 +165,23 @@ class Car:
         else:
             # Determine the surface and apply corresponding friction
             self.acceleration = 0.0
-            if self.on_grass():
-                if self.acceleration > -GRASS_MIN_FREE_DECEL:
-                    self.acceleration -= GRASS_FRICTION
-                else:
-                    self.acceleration = -GRASS_MIN_FREE_DECEL
-            elif self.on_kerbs():
-                if self.acceleration > -KERB_MIN_FREE_DECEL:
-                    self.acceleration -= KERB_FRICTION
-                else:
-                    self.acceleration = -KERB_MIN_FREE_DECEL
-            elif self.on_road():
+            if self.bump_env:
+                if self.on_grass():
+                    if self.acceleration > -GRASS_MIN_FREE_DECEL:
+                        self.acceleration -= GRASS_FRICTION
+                    else:
+                        self.acceleration = -GRASS_MIN_FREE_DECEL
+                elif self.on_kerbs():
+                    if self.acceleration > -KERB_MIN_FREE_DECEL:
+                        self.acceleration -= KERB_FRICTION
+                    else:
+                        self.acceleration = -KERB_MIN_FREE_DECEL
+                elif self.on_road():
+                    if self.acceleration > -ROAD_MIN_FREE_DECEL:
+                        self.acceleration -= ROAD_FRICTION
+                    else:
+                        self.acceleration = -ROAD_MIN_FREE_DECEL
+            else:
                 if self.acceleration > -ROAD_MIN_FREE_DECEL:
                     self.acceleration -= ROAD_FRICTION
                 else:

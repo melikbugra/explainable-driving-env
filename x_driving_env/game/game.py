@@ -36,10 +36,12 @@ class Game:
         self.score = 0
         self.speed_signs = []
         self.speed_bumps = []
+        self.speed_limits = [3, 5, 7, 10]
         self.current_speed_limit = 10
         self.next_bump_x_position = 0
         self.next_bump_y_position = 0
         self.current_speed_sign_image = None
+        self.collided_a_bump: bool = False
         self.generate_speed_signs()
         if self.bumps_activated:
             self.generate_speed_bumps()
@@ -77,8 +79,6 @@ class Game:
             self.run(render=True)
             pygame.display.flip()
             self.clock.tick(60)
-
-            print(state)
 
     def draw(self, render=False):
         if render:
@@ -135,29 +135,25 @@ class Game:
         if self.bumps_activated:
             self.update_speed_bumps()
 
-        # Update reward only if below speed limit
-        if self.car.velocity <= self.current_speed_limit * 0.99:
-            self.reward = self.car.velocity + self.car.acceleration * 100
-        elif (
-            self.current_speed_limit * 0.99
-            < self.car.velocity
-            <= self.current_speed_limit
-        ):
-            self.reward = self.car.velocity * 10
+        if self.car.velocity <= self.current_speed_limit:
+            self.reward = 1 - (self.current_speed_limit - self.car.velocity) / (
+                self.speed_limits[-1] - self.speed_limits[0]
+            )
         else:
-            self.reward = -self.car.acceleration * 100
+            self.reward = (self.current_speed_limit - self.car.velocity) / (
+                self.speed_limits[-1] - self.speed_limits[0]
+            )
 
-        if self.car.on_kerbs():
-            self.reward -= 50
-        elif self.car.on_grass():
-            self.reward -= 100
+        if self.bump_env:
+            if self.car.on_kerbs():
+                self.reward = -0.25
+            elif self.car.on_grass():
+                self.reward = -0.5
 
-        if self.bumps_activated:
-            self.reward += (
-                self.bump_collision_penalty * 1e4
-            )  # would be the minus car velocity
+            if self.collided_a_bump:
+                self.reward = -100
 
-        self.reward /= REWARD_NORMALIZE
+        self.reward /= REWARD_CONSTANT
         self.score += self.reward
 
         if self.distance_travelled >= END_POINT_DISTANCE:
@@ -209,7 +205,7 @@ class Game:
     def generate_speed_signs(self):
         distances = range(0, END_POINT_DISTANCE + 1, 5000)
         for d in distances:
-            limit = random.choice([3, 5, 7, 10])
+            limit = random.choice(self.speed_limits)
             position = (SCREEN_WIDTH // 2 + ROAD_WIDTH - 20, -d)
             self.speed_signs.append(SpeedSign(limit, position))
 
@@ -236,6 +232,7 @@ class Game:
             self.speed_bumps.append(SpeedBump(position))
 
     def update_speed_bumps(self):
+        self.collided_a_bump = False
         for bump in self.speed_bumps:
             if bump.collided or bump.passed:
                 pass
@@ -248,6 +245,7 @@ class Game:
 
             if self.car.rect.colliderect(bump.rect) and not bump.collided:
                 self.bump_collision_penalty = -10
+                self.collided_a_bump = True
                 self.car.velocity *= 1 / 5
                 bump.collided = True
 

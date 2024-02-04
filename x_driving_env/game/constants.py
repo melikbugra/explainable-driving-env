@@ -23,7 +23,7 @@ GRASS_LEFT = ROAD_LEFT - KERB_WIDTH
 GRASS_RIGHT = ROAD_RIGHT + KERB_WIDTH
 
 REWARD_NORMALIZE = MAX_GAME_TIME
-PENALTY_CONSTANT = 1
+REWARD_CONSTANT = 100
 
 # Constants for car movement
 ACCELERATION = 0.05  # Acceleration value when the up key is pressed

@@ -22,7 +22,7 @@ def run_with_env():
 
 
 if __name__ == "__main__":
-    game = Game(bump_env=True, bumps_activated=True)
+    game = Game(bump_env=False, bumps_activated=False)
     game.setup_rendering()
     # profile = cProfile.Profile()
     # profile.enable()
